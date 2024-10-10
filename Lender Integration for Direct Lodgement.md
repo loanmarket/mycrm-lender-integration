@@ -6,9 +6,9 @@ This guide outlines the process of integrating a lender’s API with MyCRM to fa
 
 By following these steps, lenders can successfully integrate their APIs with MyCRM to enable direct lodgement of loan applications. Each party has distinct responsibilities to ensure a smooth implementation. Here’s a high-level overview of the steps required:
 
-## 
+
 ![image](https://github.com/user-attachments/assets/71a09fa8-d220-4971-a784-91d5a6683c78)
-## 
+
 
 ## Step 1: Gather and Share Prerequisite Information
 
