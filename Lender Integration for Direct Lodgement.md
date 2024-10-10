@@ -86,7 +86,7 @@ The **Testable Lodgement Tool** is a specialized utility developed by LMG to ass
 
 ### How to Use the Testable Lodgement Tool
 
-Instructions for setting up and using the Testable Lodgement Tool are provided in a separate document. Please refer to this link for detailed step-by-step instructions on how to use the tool.
+Instructions for setting up and using the Testable Lodgement Tool are provided in a separate document. Please refer to [this link](https://github.com/loanmarket/mycrm-lender-integration/blob/main/Testable%20Lodgement%20Tool.md) for detailed step-by-step instructions on how to use the tool.
 
 
 
