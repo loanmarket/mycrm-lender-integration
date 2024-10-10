@@ -1,0 +1,189 @@
+# Testable Lodgement Solution
+Our objective is to establish direct integration with lenders for lodging loan applications via APIs, eliminating the need for third-party intermediaries. To facilitate a smooth and efficient integration process, we have developed a testing tool designed to streamline communication and issue identification between our system and lender platforms. This document outlines the purpose and usage of this tool to assist lenders in their testing and onboarding process.
+## Purpose of the Testing Tool
+
+The testing tool is intended to simplify the process of validating API integrations for direct loan application lodgement. It enables lenders to test the receipt and handling of loan applications submitted from MyCRM, ensuring that any issues, such as data formatting or structural discrepancies in the JSON payload, can be identified and reported efficiently. This approach accelerates issue resolution and enhances the overall integration experience.
+### Key Features:
+
+- **Issue Detection and Reporting**: Lenders can use the tool to verify that the loan application data they receive conforms to their expected structure and business rules. The tool is equipped to identify issues related to JSON structure, field formats, missing data, and more.
+- **Preconfigured Sample Loan Applications**: To save time and reduce the overhead of creating dummy loan applications manually, the tool includes prebuilt sample loan applications. Each sample is designed to cover a specific scenario, making it easier for lenders to evaluate various use cases and identify issues.
+- **Scenario-based Testing**: Users can select from predefined scenarios, each corresponding to a different type of loan application or test case. Based on the selected scenario, the tool sends the relevant sample loan application to the specified endpoint.
+- **Containerized for Ease of Use**: The testing tool is packaged as a Docker container, allowing it to be run locally on the lender’s environment without the need for complex installations or configurations. This enables quick deployment and isolated testing without affecting existing systems.
+# Configuration Settings for the Testable Lodgement Solution
+
+The **Testable Lodgement Solution** requires specific configuration settings to define how the tool interacts with the lender’s systems during the integration process. These settings can be provided either through environment variables or via the `appsettings.json` file. Proper configuration is essential for ensuring that the solution behaves as expected and successfully communicates with the designated endpoints.
+
+## Required Configuration Settings
+
+The following settings are necessary for the Testable Lodgement Solution to operate correctly:
+
+1. **`Url`**
+    
+    - **Description**: Specifies the base URL for sending requests from the tool. This is the endpoint where the loan application packages will be submitted or validated.
+    - **Format**: URL string (e.g., `"https://127.0.0.1:44362/"`).
+    - **Usage**: When the tool sends a package to the endpoint, it appends either `/Lodgement/Submit` or `/Lodgement/Validate` to the base URL specified here, depending on the operation being performed.
+    - **Example**:
+        - If `LodgementSettings__Url` is set to `https://127.0.0.1:44362/`, the full submission URL will be `https://127.0.0.1:44362/Lodgement/Submit`.
+    - **Environment Variable**: `LodgementSettings__Url`
+2. **`MediaType`**
+    
+    - **Description**: Defines the media type (content type) of the packages that are being sent to the endpoint.
+    - **Format**: String (e.g., `"application/json"`).
+    - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted. The most common media type is `application/json`, indicating that the packages will be formatted as JSON.
+    - **Environment Variable**: `LodgementSettings__MediaType`
+3. **`Country`**
+    
+    - **Description**: Specifies the country context for the loan application. This setting is used to determine the serialization format of the JSON based on the functionalities provided by [`DotnetLixi`](https://github.com/loanmarket/dotnet-lixi) package.
+    - **Supported Values**: `Australia`, `NewZealand`
+    - **Usage**: The country setting controls how the loan application data is serialized to ensure compliance with local regulations and standards. It should be set to the corresponding country where the lender operates.
+    - **Environment Variable**: `LodgementSettings__Country`
+4. **`Version`**
+    
+    - **Description**: Indicates the LIXI version that the loan application package should be serialized to. The LIXI standard is used for structuring loan application data in a format that is consistent and interoperable across different systems.
+    - **Format**: String (e.g., `"2.6.73"`).
+    - **Usage**: This setting ensures that the loan package is serialized in the correct version of the LIXI standard that the lender’s system expects.
+    - **Environment Variable**: `LodgementSettings__Version`
+5. **`IgnoreSSL`**
+    
+    - **Description**: Determines whether SSL certificate validation should be ignored when the tool is making HTTPS requests to the specified endpoints.
+    - **Supported Values**: `true`, `false`
+    - **Usage**: This setting is particularly useful when running the tool as a Docker image and making requests to `localhost` endpoints that use self-signed certificates. By setting `IgnoreSSL` to `true`, SSL certificate validation is bypassed, preventing certificate-related errors. If this setting is `false`, the user must configure proper SSL certificates or use HTTP ports instead. 
+    - **Warning**: This will bypass the CA validation process, use wisely at own risk. 
+    - **Environment Variable**: `LodgementSettings__IgnoreSSL`
+
+## Configuration Options
+
+The above settings can be provided in one of the following ways:
+### 1. **Environment Variables**
+
+Set each configuration setting as an environment variable, using the following format:
+
+- `LodgementSettings__Url="https://127.0.0.1:44362/"`
+- `LodgementSettings__MediaType="application/json"`
+- `LodgementSettings__Country="Australia"`
+- `LodgementSettings__Version="2.6.73"`
+- `LodgementSettings__IgnoreSSL="true"`
+
+This approach is recommended when deploying the tool in a containerized environment, as it allows for greater flexibility and isolation between different configurations. 
+
+### 2. **`appsettings.json` File**
+
+Alternatively, the settings can be included in the `appsettings.json` configuration file as shown below:
+
+
+```
+  "LodgementSettings": {
+    "Url": "https://127.0.0.1:44362/",
+    "MediaType": "application/json",
+    "Country": "Australia",
+    "Version": "2.6.73"
+  } 
+```
+
+This option is suitable for local testing and development environments where settings are unlikely to change frequently.
+
+## Additional Considerations
+
+- When running the tool within a Docker container, ensure that the configuration values, especially the `LodgementSettings__Url` and `LodgementSettings__IgnoreSSL`, are appropriately set. Failure to do so can result in issues connecting to local or secured endpoints due to SSL validation errors.
+- For production environments, it is advisable to use a properly configured SSL certificate and set `LodgementSettings__IgnoreSSL` to `false` to enforce secure communication.
+
+## Endpoints Overview
+
+### 1. `POST /Lodgement/Submit`
+
+- **Purpose**: This endpoint is used to submit a loan application package directly to the specified endpoint, simulating the end-to-end submission process.
+- **Functionality**: Users must construct the loan application package in JSON format and include it in the request body. The package is then forwarded to the designated endpoint for further processing.
+- **Parameters**:
+    - `LoanApplicationPackage` (JSON): The complete loan application package, formatted as per the LIXI or lender-specific schema.
+    - `EndpointURL`: The target URL where the package should be sent.
+- **Use Case**: This endpoint is ideal for testing the actual submission of dynamically created loan packages, enabling users to verify that the package contents and structure conform to lender expectations and requirements.
+
+### 2. `POST /Lodgement/SubmitTestPackage`
+
+- **Purpose**: Designed primarily for testing purposes, this endpoint allows users to submit predefined sample loan application packages without the need to manually construct them.
+- **Functionality**: The tool comes with a set of prebuilt sample loan applications, covering various scenarios such as Refinancing, Top-Up, and First Home Buyer applications. Users can select a scenario and submit the corresponding sample package directly to the specified endpoint.
+- **Parameters**:
+    - `Scenario` (string): Specifies the type of loan scenario for which the test package should be submitted (e.g., `Refinancing`, `TopUp`).
+    - `EndpointURL`: The target URL where the sample package should be sent.
+- **Use Case**: This endpoint simplifies testing by allowing users to evaluate specific scenarios without needing to manually create loan packages. It helps validate how different types of loan applications are processed by the lender’s systems.
+
+### 3. `POST /Lodgement/Validate`
+
+- **Purpose**: This endpoint is used to validate the structure and content of a loan application package before submission.
+- **Functionality**: Users can pass a loan package in JSON format to this endpoint, which then forwards it to the validation service. The service checks the package against schema and business rules, ensuring compliance and correctness.
+- **Parameters**:
+    - `LoanApplicationPackage` (JSON): The loan package to be validated, formatted as per LIXI standards or lender-specific requirements.
+    - `ValidationEndpointURL`: The URL of the validation service to which the package should be sent.
+- **Use Case**: This endpoint is useful for verifying loan packages prior to submission, helping to catch any errors or inconsistencies in the package content early in the process.
+
+### 4. `POST /LixiPackage/SaveLixiPackageSample`
+
+- **Purpose**: This endpoint is used to save a LIXI-format loan application package sample, making it available for future testing or reference.
+- **Functionality**: Users can create a LIXI package sample for a particular scenario and save it using this endpoint. The saved sample can include specific data and configurations that reflect lender requirements or unique testing cases.
+- **Parameters**:
+    - `Scenario` (string): The scenario name associated with the sample package (e.g., `Refinancing`, `TopUp`).
+    - `BeObfuscated`(boolean): Determines if the data for a specific field should be obfuscated or not. At this point, if the flag is true, only the value of  following properties get obfuscated: "CompanyName", "Email", "Number", "ABN", "WebAddress", "BusinessNumber", "Name"
+    - `LIXIPackageSample` (JSON): The LIXI package to be saved, formatted as per industry standards.
+- **Use Case**: This endpoint is valuable for maintaining a repository of sample packages that can be reused across different testing sessions, eliminating the need to recreate packages for commonly tested scenarios.
+
+### 5. `GET /LixiPackage/GetLixiPackageSample/{scenario}`
+
+- **Purpose**: This endpoint retrieves a previously saved LIXI package sample based on a specified scenario.
+- **Functionality**: Users can query this endpoint to access the stored LIXI package for a given scenario. The retrieved package can then be used as a template or reference for creating new packages or for testing the submission and validation processes.
+- **Parameters**:
+    - `scenario` (string): The scenario identifier for which the LIXI package sample should be retrieved (e.g., `Refinancing`, `TopUp`).
+- **Use Case**: This endpoint is useful for quickly accessing predefined LIXI packages without manually searching or recreating them, enabling more efficient testing and validation workflows.
+
+
+# Running the Testable Lodgement Solution Docker Image
+
+Follow the steps below to set up and run the Docker container for the Testable Lodgement Solution. This tool allows lenders to test the submission and validation of loan packages in various scenarios using a standard set of APIs.
+## Step 1: Set Up the Docker Environment
+Ensure that Docker is installed and configured on your machine. If Docker is not installed, you can download and install it from the [Docker official website](https://docs.docker.com/get-started/).
+
+## Step 2: Pull the Docker Image
+To download the latest Docker image for the Testable Lodgement Solution, run the following command in your terminal or command prompt:
+
+`docker pull mycrm-testable-lodgement:latest`
+
+This command pulls the latest version of the Docker image named `mycrm-testable-lodgement` to your local Docker environment.
+
+## Step 3: Start the Docker Container
+When running the Docker container, you need to provide four critical environment variables:
+
+1. **`LodgementSettings__URL`**: The base endpoint URL for receiving the loan packages.
+2. **`LodgementSettings__Country`**: The country for which the lodgement is being tested. Valid options are `Australia` or `NewZealand`.
+3. **`LodgementSettings__Version`**: The supported LIXI version for the loan application package (e.g., `2.6.35`).
+4. **`LodgementSettings__IgnoreSSL`**: A boolean setting that indicates whether to bypass SSL certificate validation. This should be set to `true` if using self-signed certificates or when connecting to HTTPS endpoints on localhost.
+
+To run the container with these environment variables, execute the following command:
+```
+docker run -d -p 8080:8080 \ 
+-e LodgementSettings__URL="https://yourapiendpoint.com" \ 
+-e LodgementSettings__Country="Australia" \ 
+-e LodgementSettings__Version="2.6.35" \ 
+-e LodgementSettings__IgnoreSSL="true" \ 
+mycrm-testable-lodgement:latest
+```
+### Explanation:
+
+- **`-d`**: Runs the container in detached mode (in the background).
+- **`-p 8080:8080`**: Maps port 8080 of the host machine to port 8080 of the Docker container, allowing access to the API endpoints on your local machine via port 8080.
+- **`-e`**: Sets the environment variables required by the container.
+
+**Note**: Make sure to replace the placeholder values with your actual configurations:
+
+- Replace `"https://yourapiendpoint.com"` with your actual endpoint URL.
+- Replace `"Australia"` with the appropriate country (`Australia` or `NewZealand`).
+- Replace `"2.6.35"` with the Lender’s supported LIXI version.
+
+The code will send the requests for lodgement submissions to the `{BaseURL}/Lodgement/Submit` endpoint, where `{BaseURL}` is the value provided for the `URL` environment variable.
+
+### Important Consideration for Localhost URLs
+Docker containers use isolated networks, meaning that `localhost` inside the container refers to the container’s own network, not the host machine’s network. If your endpoint is running on your host machine and you want the Docker container to connect to it, use `host.docker.internal` (for Docker on Windows and macOS).
+
+For example:
+
+`-e LodgementSettings__URL="http://host.docker.internal:54856"`
+
+This ensures that the container can communicate with the services running on your host machine.
