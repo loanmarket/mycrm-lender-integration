@@ -9,6 +9,7 @@ The testing tool is intended to simplify the process of validating API integrati
 - **Preconfigured Sample Loan Applications**: To save time and reduce the overhead of creating dummy loan applications manually, the tool includes prebuilt sample loan applications. Each sample is designed to cover a specific scenario, making it easier for lenders to evaluate various use cases and identify issues.
 - **Scenario-based Testing**: Users can select from predefined scenarios, each corresponding to a different type of loan application or test case. Based on the selected scenario, the tool sends the relevant sample loan application to the specified endpoint.
 - **Containerized for Ease of Use**: The testing tool is packaged as a Docker container, allowing it to be run locally on the lender’s environment without the need for complex installations or configurations. This enables quick deployment and isolated testing without affecting existing systems.
+---
 # Configuration Settings for the Testable Lodgement Solution
 
 The **Testable Lodgement Solution** requires specific configuration settings to define how the tool interacts with the lender’s systems during the integration process. These settings can be provided either through environment variables or via the `appsettings.json` file. Proper configuration is essential for ensuring that the solution behaves as expected and successfully communicates with the designated endpoints.
@@ -31,6 +32,7 @@ The following settings are necessary for the Testable Lodgement Solution to oper
     
     - **Description**: Defines the media type (content type) of the packages that are being sent to the endpoint.
     - **Format**: String (e.g., `"application/json"`).
+    - **Supported Values**: `application/json`, `application/xml`.
     - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted. The most common media type is `application/json`, indicating that the packages will be formatted as JSON.
     - **Environment Variable**: `LodgementSettings__MediaType`
 3. **`Country`**
@@ -43,6 +45,15 @@ The following settings are necessary for the Testable Lodgement Solution to oper
     
     - **Description**: Indicates the LIXI version that the loan application package should be serialized to. The LIXI standard is used for structuring loan application data in a format that is consistent and interoperable across different systems.
     - **Format**: String (e.g., `"2.6.73"`).
+    - **Supported Values**: 
+        - "2.6.35"  (Cal2635)
+        - "2.6.46"  (Cal2646) 
+        - "2.1.8"   (Cnz218)
+        - "2.1.19"  (Cnz2119) 
+        - "2.6.56"  (Cal2656) 
+        - "2.1.29"  (Cnz2129) 
+        - "2.6.73"  (Cal2673) 
+        - "2.1.31"  (Cnz2131) 
     - **Usage**: This setting ensures that the loan package is serialized in the correct version of the LIXI standard that the lender’s system expects.
     - **Environment Variable**: `LodgementSettings__Version`
 5. **`IgnoreSSL`**
@@ -60,11 +71,11 @@ The above settings can be provided in one of the following ways:
 
 Set each configuration setting as an environment variable, using the following format:
 
-- `LodgementSettings__Url="https://127.0.0.1:44362/"`
-- `LodgementSettings__MediaType="application/json"`
-- `LodgementSettings__Country="Australia"`
-- `LodgementSettings__Version="2.6.73"`
-- `LodgementSettings__IgnoreSSL="true"`
+- `LodgementSettings__Url=https://127.0.0.1:44362/`
+- `LodgementSettings__MediaType=application/json`
+- `LodgementSettings__Country=Australia`
+- `LodgementSettings__Version=2.6.73`
+- `LodgementSettings__IgnoreSSL=true`
 
 This approach is recommended when deploying the tool in a containerized environment, as it allows for greater flexibility and isolation between different configurations. 
 
@@ -89,7 +100,9 @@ This option is suitable for local testing and development environments where set
 - When running the tool within a Docker container, ensure that the configuration values, especially the `LodgementSettings__Url` and `LodgementSettings__IgnoreSSL`, are appropriately set. Failure to do so can result in issues connecting to local or secured endpoints due to SSL validation errors.
 - For production environments, it is advisable to use a properly configured SSL certificate and set `LodgementSettings__IgnoreSSL` to `false` to enforce secure communication.
 
-## Endpoints Overview
+---
+
+# Endpoints Overview
 
 ### 1. `POST /Lodgement/Submit`
 
