@@ -21,9 +21,11 @@ The following settings are necessary for the Testable Lodgement Solution to oper
     
     - **Description**: Specifies the base URL for sending requests from the tool. This is the endpoint where the loan application packages will be submitted or validated.
     - **Format**: URL string (e.g., `"https://127.0.0.1:44362/"`).
-    - **Usage**: When the tool sends a package to the endpoint, it appends either `/Lodgement/Submit` or `/Lodgement/Validate` to the base URL specified here, depending on the operation being performed.
-    - **Example**:
-        - If `LodgementSettings__Url` is set to `https://127.0.0.1:44362/`, the full submission URL will be `https://127.0.0.1:44362/Lodgement/Submit`.
+    - **Usage**: When the tool sends a package to the endpoint, it appends either `/Lodgement/Submit` or `/Lodgement/Validate` to the base URL specified here, depending on the operation being performed. For example, If `LodgementSettings__Url` is set to `https://host.docker.internal:44362/`, the full submission URL will be `https://host.docker.internal:44362/Lodgement/Submit`.
+    - **Important Consideration**:
+    Docker containers use isolated networks, meaning that `localhost` inside the container refers to the container’s own network, not the host machine’s network. If your endpoint is running on your host machine and you want the Docker container to connect to it, use `host.docker.internal` (for Docker on Windows and macOS).For example:
+        ` LodgementSettings__URL="http://host.docker.internal:54856"`   
+        This ensures that the container can communicate with the services running on your   host machine.
     - **Environment Variable**: `LodgementSettings__Url`
 2. **`MediaType`**
     
@@ -136,54 +138,96 @@ This option is suitable for local testing and development environments where set
 
 
 # Running the Testable Lodgement Solution Docker Image
+Follow the steps below to set up and run the Docker container for the Testable Lodgement Solution for. This tool allows lenders to test the submission and validation of loan packages in various scenarios using a standard set of APIs. 
 
-Follow the steps below to set up and run the Docker container for the Testable Lodgement Solution. This tool allows lenders to test the submission and validation of loan packages in various scenarios using a standard set of APIs.
-## Step 1: Set Up the Docker Environment
-Ensure that Docker is installed and configured on your machine. If Docker is not installed, you can download and install it from the [Docker official website](https://docs.docker.com/get-started/).
+## Using docker compose
+This guide will help you set up and run the `mycrmfinance/mycrm-testable-lodgement` service using Docker Compose. This service simulates a testable lodgement for loan applications. You will use the provided `compose.yml` file to configure and run the service.
 
-## Step 2: Pull the Docker Image
-To download the latest Docker image for the Testable Lodgement Solution, run the following command in your terminal or command prompt:
+### Prerequisites
+Make sure the following prerequisites are met:
+1. **Docker** is installed and running on your machine. If not installed, download and install Docker from [here](https://docs.docker.com/get-docker/).
+2. **Docker Compose** is installed. It is typically bundled with Docker Desktop. You can verify by running:
+   ```bash
+   docker-compose --version
+   ```
 
-`docker pull mycrm-testable-lodgement:latest`
+### Steps to Use Docker Compose
 
-This command pulls the latest version of the Docker image named `mycrm-testable-lodgement` to your local Docker environment.
+1. **Download the `compose.yml` File**
+   Save the following `compose.yml` content to your local system. 
 
-## Step 3: Start the Docker Container
-When running the Docker container, you need to provide four critical environment variables:
 
-1. **`LodgementSettings__URL`**: The base endpoint URL for receiving the loan packages.
-2. **`LodgementSettings__Country`**: The country for which the lodgement is being tested. Valid options are `Australia` or `NewZealand`.
-3. **`LodgementSettings__Version`**: The supported LIXI version for the loan application package (e.g., `2.6.35`).
-4. **`LodgementSettings__IgnoreSSL`**: A boolean setting that indicates whether to bypass SSL certificate validation. This should be set to `true` if using self-signed certificates or when connecting to HTTPS endpoints on localhost.
 
-To run the container with these environment variables, execute the following command:
-```
-docker run -d -p 8080:8080 \ 
--e LodgementSettings__URL="https://yourapiendpoint.com" \ 
--e LodgementSettings__Country="Australia" \ 
--e LodgementSettings__Version="2.6.35" \ 
--e LodgementSettings__IgnoreSSL="true" \ 
-mycrm-testable-lodgement:latest
-```
-### Explanation:
+2. **Navigate to the Directory**
+   Open a terminal or command prompt and navigate to the directory where you saved the `compose.yml` file:
 
-- **`-d`**: Runs the container in detached mode (in the background).
-- **`-p 8080:8080`**: Maps port 8080 of the host machine to port 8080 of the Docker container, allowing access to the API endpoints on your local machine via port 8080.
-- **`-e`**: Sets the environment variables required by the container.
+   ```bash
+   cd /path/to/your/compose-directory
+   ```
+2. **Set up the environment variables**
+    you need to provide four critical environment variables:
 
-**Note**: Make sure to replace the placeholder values with your actual configurations:
+    - **`LodgementSettings__URL`**: The base endpoint URL for receiving the loan packages.
+    - **`LodgementSettings__Country`**: The country for which the lodgement is being tested. Valid options are `Australia` or `NewZealand`.
+    - **`LodgementSettings__Version`**: The supported LIXI version for the loan application package (e.g., `2.6.35`).
+    - **`LodgementSettings__IgnoreSSL`**: A boolean setting that indicates whether to bypass SSL certificate validation. This should be set to `true` if using self-signed certificates or when connecting to HTTPS endpoints on localhost.
+    For example:
+    ```yaml
+    environment:
+      - LodgementSettings__URL=https://yourapiendpoint.com
+      - LodgementSettings__Country=Australia
+      - LodgementSettings__Version=2.6.35
+      - LodgementSettings__MediaType=application/json
+      - LodgementSettings__IgnoreSSL=true
+    ```
+    #### Explanation:
+    Make sure to replace the placeholder values with your actual configurations:
+    
+    - Replace `"https://yourapiendpoint.com"` with your actual endpoint URL.
+    - Replace `"Australia"` with the appropriate country (`Australia` or `NewZealand`).
+    - Replace `"2.6.35"` with the Lender’s supported LIXI version.
+    
+    The code will send the requests for lodgement submissions to the `{BaseURL}/Lodgement/Submit` endpoint, where `{BaseURL}` is the value provided for the `URL` environment variable.
+    
+  
+3. **Run the Docker Compose Command**
+   Run the following command to start the service in detached mode (running in the background):
 
-- Replace `"https://yourapiendpoint.com"` with your actual endpoint URL.
-- Replace `"Australia"` with the appropriate country (`Australia` or `NewZealand`).
-- Replace `"2.6.35"` with the Lender’s supported LIXI version.
+   ```bash
+   docker-compose up -d
+   ```
 
-The code will send the requests for lodgement submissions to the `{BaseURL}/Lodgement/Submit` endpoint, where `{BaseURL}` is the value provided for the `URL` environment variable.
+   This command will:
+   - Pull the `mycrmfinance/mycrm-testable-lodgement:latest` image from Docker Hub (if not already pulled).
+   - Start the container and expose it on port 8080.
+   - Automatically set up the necessary environment variables.
+   - **`-d`**: Runs the container in detached mode (in the background).
 
-### Important Consideration for Localhost URLs
-Docker containers use isolated networks, meaning that `localhost` inside the container refers to the container’s own network, not the host machine’s network. If your endpoint is running on your host machine and you want the Docker container to connect to it, use `host.docker.internal` (for Docker on Windows and macOS).
+4. **Verify the Service is Running**
+   You can check if the container is running by using the following command:
 
-For example:
+   ```bash
+   docker ps
+   ```
 
-`-e LodgementSettings__URL="http://host.docker.internal:54856"`
+   This will list all running containers. You should see a container with the image `mycrmfinance/mycrm-testable-lodgement:latest` in the list.
 
-This ensures that the container can communicate with the services running on your host machine.
+5. **Access the Service**
+   The service will be available on `http://localhost:8080`. You can interact with the API or perform lodgement tests by sending requests to this address.
+
+6. **Stop the Service**
+   If you want to stop the service, run the following command:
+
+   ```bash
+   docker-compose down
+   ```
+
+   This will stop and remove the running container.
+
+#### **Troubleshooting**
+
+- **If you can't access the service**: Ensure that no other service is using port 8080 on your machine. You can change the port in the `docker-compose.yml` file if necessary (e.g., change `"8080:8080"` to `"9090:8080"`).
+- **If you need to change environment variables**: You can modify the values for `LodgementSettings__URL`, `LodgementSettings__Country`, etc., directly in the `docker-compose.yml` file before running `docker-compose up`.
+- **If you encounter permission issues**: Ensure that Docker Desktop is running with sufficient permissions, and try running the terminal or command prompt as an administrator.
+
+---
