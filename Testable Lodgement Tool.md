@@ -149,7 +149,7 @@ This option is suitable for local testing and development environments where set
     - `scenario` (string): The scenario identifier for which the LIXI package sample should be retrieved (e.g., `Refinancing`, `TopUp`).
 - **Use Case**: This endpoint is useful for quickly accessing predefined LIXI packages without manually searching or recreating them, enabling more efficient testing and validation workflows.
 
-
+---
 # Running the Testable Lodgement Solution Docker Image
 Follow the steps below to set up and run the Docker container for the Testable Lodgement Solution for. This tool allows lenders to test the submission and validation of loan packages in various scenarios using a standard set of APIs. 
 
@@ -167,7 +167,7 @@ Make sure the following prerequisites are met:
 ### Steps to Use Docker Compose
 
 1. **Download the `compose.yml` File**
-   Save the following `compose.yml` content to your local system. 
+   Save the [`compose.yml`](https://github.com/loanmarket/mycrm-lender-integration/blob/main/compose.yaml) file to your local system. 
 
 
 
