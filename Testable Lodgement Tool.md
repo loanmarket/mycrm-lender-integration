@@ -33,11 +33,11 @@ The following settings are necessary for the Testable Lodgement Solution to oper
     - **Description**: Defines the media type (content type) of the packages that are being sent to the endpoint.
     - **Format**: String (e.g., `"application/json"`).
     - **Supported Values**: `application/json`, `application/xml`.
-    - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted. The most common media type is `application/json`, indicating that the packages will be formatted as JSON.
+    - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted.
     - **Environment Variable**: `LodgementSettings__MediaType`
 3. **`Country`**
     
-    - **Description**: Specifies the country context for the loan application. This setting is used to determine the serialization format of the JSON based on the functionalities provided by [`DotnetLixi`](https://github.com/loanmarket/dotnet-lixi) package.
+    - **Description**: Specifies the country context for the loan application. This setting is used to determine the serialization format of the JSON based on the functionalities provided by `DotnetLixi` package.
     - **Supported Values**: `Australia`, `NewZealand`
     - **Usage**: The country setting controls how the loan application data is serialized to ensure compliance with local regulations and standards. It should be set to the corresponding country where the lender operates.
     - **Environment Variable**: `LodgementSettings__Country`
