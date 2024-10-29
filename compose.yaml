@@ -5,7 +5,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - LodgementSettings__URL=https://host.docker.internal:7182
+      - LodgementSettings__SubmissionUrl=https://host.docker.internal/submit:7182
+      - LodgementSettings__ValidationUrl=https://host.docker.internal/validate:7182
       - LodgementSettings__Country=Australia
       - LodgementSettings__Version=2.6.35
       - LodgementSettings__IgnoreSSL=true
