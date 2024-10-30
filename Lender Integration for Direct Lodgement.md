@@ -1,6 +1,6 @@
 # Lender Integration for Direct Lodgement
 
-This guide outlines the process of integrating a lender’s API with MyCRM to facilitate direct submission of loan applications, eliminating the need for third-party intermediaries. With direct lodgement, MyCRM enables the seamless transmission of loan applications straight to a lender’s system, enhancing efficiency and reducing processing time. The integration process involves collaboration between LMG and the lender. 
+This guide outlines the process of integrating a lender’s API with MyCRM to facilitate direct submission of loan applications. With direct lodgement, MyCRM enables the seamless transmission of loan applications straight to a lender’s system, enhancing efficiency and reducing processing time. The integration process involves collaboration between LMG and the lender. 
 
 # Integration Steps
 

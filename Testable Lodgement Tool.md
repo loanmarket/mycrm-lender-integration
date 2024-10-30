@@ -18,30 +18,40 @@ The **Testable Lodgement Solution** requires specific configuration settings to 
 
 The following settings are necessary for the Testable Lodgement Solution to operate correctly:
 
-1. **`Url`**
+1. **`SubmissionUrl`**
     
-    - **Description**: Specifies the base URL for sending requests from the tool. This is the endpoint where the loan application packages will be submitted or validated.
-    - **Format**: URL string (e.g., `"https://127.0.0.1:44362/"`).
-    - **Usage**: When the tool sends a package to the endpoint, it appends either `/Lodgement/Submit` or `/Lodgement/Validate` to the base URL specified here, depending on the operation being performed. For example, If `LodgementSettings__Url` is set to `https://host.docker.internal:44362/`, the full submission URL will be `https://host.docker.internal:44362/Lodgement/Submit`.
+    - **Description**: Specifies the base URL for sending requests from the tool. This is the endpoint where the loan application packages will be submitted.
+    - **Format**: URL string (e.g., `"https://127.0.0.1:44362/submit"`).
+    - **Usage**:The tool sends a package to the specified endpoint by this variable. The full url of the endpoint that is supposed to recieve the pacakge should be provided by this URL.
     - **Important Consideration**:
     Docker containers use isolated networks, meaning that `localhost` inside the container refers to the container’s own network, not the host machine’s network. If your endpoint is running on your host machine and you want the Docker container to connect to it, use `host.docker.internal` (for Docker on Windows and macOS).For example:
-        ` LodgementSettings__URL="http://host.docker.internal:54856"`   
+        ` LodgementSettings__SubmissionUrl="http://host.docker.internal:54856/submit"`   
         This ensures that the container can communicate with the services running on your   host machine.
-    - **Environment Variable**: `LodgementSettings__Url`
-2. **`MediaType`**
+    - **Environment Variable**: `LodgementSettings__SubmissionUrl`
+2. **`ValidationUrl`**
+    
+    - **Description**: Specifies the base URL for sending requests for validation from the tool. This is the endpoint where the loan application packages will be validated.
+    - **Format**: URL string (e.g., `"https://127.0.0.1:44362/validate"`).
+    - **Usage**:The tool sends a package to the specified endpoint by this variable. The full url of the endpoint that is supposed to recieve the pacakge should be provided by this URL.
+    - **Important Consideration**:
+    Docker containers use isolated networks, meaning that `localhost` inside the container refers to the container’s own network, not the host machine’s network. If your endpoint is running on your host machine and you want the Docker container to connect to it, use `host.docker.internal` (for Docker on Windows and macOS).For example:
+        ` LodgementSettings__ValidationUrl="http://host.docker.internal:54856/validate"`   
+        This ensures that the container can communicate with the services running on your   host machine.
+    - **Environment Variable**: `LodgementSettings__ValidationUrl`
+3. **`MediaType`**
     
     - **Description**: Defines the media type (content type) of the packages that are being sent to the endpoint.
     - **Format**: String (e.g., `"application/json"`).
     - **Supported Values**: `application/json`, `application/xml`.
-    - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted. The most common media type is `application/json`, indicating that the packages will be formatted as JSON.
+    - **Usage**: This setting determines the format in which the loan application packages are serialized and transmitted.
     - **Environment Variable**: `LodgementSettings__MediaType`
-3. **`Country`**
+4. **`Country`**
     
-    - **Description**: Specifies the country context for the loan application. This setting is used to determine the serialization format of the JSON based on the functionalities provided by [`DotnetLixi`](https://github.com/loanmarket/dotnet-lixi) package.
+    - **Description**: Specifies the country context for the loan application. This setting is used to determine the serialization format of the JSON based on the functionalities provided by `DotnetLixi` package.
     - **Supported Values**: `Australia`, `NewZealand`
     - **Usage**: The country setting controls how the loan application data is serialized to ensure compliance with local regulations and standards. It should be set to the corresponding country where the lender operates.
     - **Environment Variable**: `LodgementSettings__Country`
-4. **`Version`**
+5. **`Version`**
     
     - **Description**: Indicates the LIXI version that the loan application package should be serialized to. The LIXI standard is used for structuring loan application data in a format that is consistent and interoperable across different systems.
     - **Format**: String (e.g., `"2.6.73"`).
@@ -56,7 +66,7 @@ The following settings are necessary for the Testable Lodgement Solution to oper
         - "2.1.31"  (Cnz2131) 
     - **Usage**: This setting ensures that the loan package is serialized in the correct version of the LIXI standard that the lender’s system expects.
     - **Environment Variable**: `LodgementSettings__Version`
-5. **`IgnoreSSL`**
+6. **`IgnoreSSL`**
     
     - **Description**: Determines whether SSL certificate validation should be ignored when the tool is making HTTPS requests to the specified endpoints.
     - **Supported Values**: `true`, `false`
@@ -71,7 +81,8 @@ The above settings can be provided in one of the following ways:
 
 Set each configuration setting as an environment variable, using the following format:
 
-- `LodgementSettings__Url=https://127.0.0.1:44362/`
+- `LodgementSettings__SubmissionUrl=https://host.docker.internal:7182/submit`
+- `LodgementSettings__ValidationUrl=https://host.docker.internal:7182/validate`
 - `LodgementSettings__MediaType=application/json`
 - `LodgementSettings__Country=Australia`
 - `LodgementSettings__Version=2.6.73`
@@ -86,7 +97,8 @@ Alternatively, the settings can be included in the `appsettings.json` configurat
 
 ```
   "LodgementSettings": {
-    "Url": "https://127.0.0.1:44362/",
+    "SubmissionUrl": "https://host.docker.internal:7182/submit",
+    "ValidationUrl": "https://host.docker.internal:7182/validate",
     "MediaType": "application/json",
     "Country": "Australia",
     "Version": "2.6.73"
@@ -180,14 +192,16 @@ Make sure the following prerequisites are met:
 2. **Set up the environment variables**
     you need to provide four critical environment variables:
 
-    - **`LodgementSettings__URL`**: The base endpoint URL for receiving the loan packages.
+    - **`LodgementSettings__SubmissionUrl`**: The base endpoint URL for receiving the loan packages for submission.
+    - **`LodgementSettings__ValidationUrl`**: The base endpoint URL for receiving the loan packages for validation.
     - **`LodgementSettings__Country`**: The country for which the lodgement is being tested. Valid options are `Australia` or `NewZealand`.
     - **`LodgementSettings__Version`**: The supported LIXI version for the loan application package (e.g., `2.6.35`).
     - **`LodgementSettings__IgnoreSSL`**: A boolean setting that indicates whether to bypass SSL certificate validation. This should be set to `true` if using self-signed certificates or when connecting to HTTPS endpoints on localhost.
     For example:
     ```yaml
     environment:
-      - LodgementSettings__URL=https://yourapiendpoint.com
+      - LodgementSettings__SubmissionUrl=https://yourapiendpoint.com/submit
+      - LodgementSettings__ValidationUrl=https://yourapiendpoint.com/validate
       - LodgementSettings__Country=Australia
       - LodgementSettings__Version=2.6.35
       - LodgementSettings__MediaType=application/json
@@ -196,11 +210,11 @@ Make sure the following prerequisites are met:
     #### Explanation:
     Make sure to replace the placeholder values with your actual configurations:
     
-    - Replace `"https://yourapiendpoint.com"` with your actual endpoint URL.
+    - Replace `LodgementSettings__SubmissionUrl` and `LodgementSettings__ValidationUrl` values with your actual endpoint URL.
     - Replace `"Australia"` with the appropriate country (`Australia` or `NewZealand`).
     - Replace `"2.6.35"` with the Lender’s supported LIXI version.
     
-    The code will send the requests for lodgement submissions to the `{BaseURL}/Lodgement/Submit` endpoint, where `{BaseURL}` is the value provided for the `URL` environment variable.
+
     
   
 3. **Run the Docker Compose Command**
@@ -236,6 +250,9 @@ Make sure the following prerequisites are met:
    ```
 
    This will stop and remove the running container.
+
+#### **Notes**
+- **Sample loan applicaiton files**: All the sample loan applications for different scenarios could be find in the app/LixiPackageSamples folder as json files in the container. Please be noticed, each time you run the image for testable lodgement, the content of this folder would get reset and all the previous changes on the sample files would be lost. 
 
 #### **Troubleshooting**
 
