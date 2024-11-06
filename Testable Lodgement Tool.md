@@ -240,7 +240,7 @@ Make sure the following prerequisites are met:
    This will list all running containers. You should see a container with the image `mycrmfinance/mycrm-testable-lodgement:latest` in the list.
 
 5. **Access the Service**
-   The service will be available on `http://localhost:8080`. You can interact with the API or perform lodgement tests by sending requests to this address.
+   The service will be available on sepecifed port by docker compose which in this case would be`8080`. You can interact with the API or perform lodgement tests by using the Swagger which can be reached via `http://localhost:8080/swagger/index.html`address.
 
 6. **Stop the Service**
    If you want to stop the service, run the following command:
