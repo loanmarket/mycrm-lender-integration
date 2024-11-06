@@ -71,7 +71,7 @@ The following settings are necessary for the Testable Lodgement Solution to oper
     - **Description**: Determines whether SSL certificate validation should be ignored when the tool is making HTTPS requests to the specified endpoints.
     - **Supported Values**: `true`, `false`
     - **Usage**: This setting is particularly useful when running the tool as a Docker image and making requests to `localhost` endpoints that use self-signed certificates. By setting `IgnoreSSL` to `true`, SSL certificate validation is bypassed, preventing certificate-related errors. If this setting is `false`, the user must configure proper SSL certificates or use HTTP ports instead. 
-    - **Warning**: This will bypass the CA validation process, use wisely at own risk. 
+    - **Warning**: This will bypass the CA validation process, use wisely at your own risk. 
     - **Environment Variable**: `LodgementSettings__IgnoreSSL`
 
 ## Configuration Options
