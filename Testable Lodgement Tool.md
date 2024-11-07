@@ -125,7 +125,7 @@ This option is suitable for local testing and development environments where set
     - `EndpointURL`: The target URL where the package should be sent.
 - **Use Case**: This endpoint is ideal for testing the actual submission of dynamically created loan packages, enabling users to verify that the package contents and structure conform to lender expectations and requirements.
 
-### 2. `POST /Lodgement/SubmitTestPackage`
+### 2. `POST /Lodgement/SubmitSamplePackage`
 
 - **Purpose**: Designed primarily for testing purposes, this endpoint allows users to submit predefined sample loan application packages without the need to manually construct them.
 - **Functionality**: The tool comes with a set of prebuilt sample loan applications, covering various scenarios such as Refinancing, Top-Up, and First Home Buyer applications. Users can select a scenario and submit the corresponding sample package directly to the specified endpoint.
@@ -161,6 +161,13 @@ This option is suitable for local testing and development environments where set
     - `scenario` (string): The scenario identifier for which the LIXI package sample should be retrieved (e.g., `Refinancing`, `TopUp`).
 - **Use Case**: This endpoint is useful for quickly accessing predefined LIXI packages without manually searching or recreating them, enabling more efficient testing and validation workflows.
 
+### 6. `GET /LixiPackage/GetSerializedLixiPackageSample/{scenario}`
+
+- **Purpose**: This endpoint retrieves a previously saved LIXI package sample based on a specified scenario and return serialized value of the package based on Lixi version and country.
+- **Functionality**: Users can query this endpoint to get serilized sample lixi package.
+- **Parameters**:
+    - `scenario` (string): The scenario identifier for which the LIXI package sample should be retrieved (e.g., `Refinancing`, `TopUp`).
+- **Use Case**: This endpoint is useful for quickly accessing serialized predefined LIXI packages without using the SubmitSamplePackage endpoints to get the serialized version of a sample package.
 ---
 # Running the Testable Lodgement Solution Docker Image
 Follow the steps below to set up and run the Docker container for the Testable Lodgement Solution for. This tool allows lenders to test the submission and validation of loan packages in various scenarios using a standard set of APIs. 
@@ -221,7 +228,7 @@ Make sure the following prerequisites are met:
    Run the following command to start the service in detached mode (running in the background):
 
    ```bash
-   docker-compose up -d
+   docker-compose up --pull always -d
    ```
 
    This command will:
@@ -229,6 +236,7 @@ Make sure the following prerequisites are met:
    - Start the container and expose it on port 8080.
    - Automatically set up the necessary environment variables.
    - **`-d`**: Runs the container in detached mode (in the background).
+   - **`--pull always`**: This command tells Docker Compose to pull the latest images (if available) before starting the containers.
 
 4. **Verify the Service is Running**
    You can check if the container is running by using the following command:
