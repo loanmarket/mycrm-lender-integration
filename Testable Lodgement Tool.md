@@ -153,7 +153,18 @@ This option is suitable for local testing and development environments where set
     - `LIXIPackageSample` (JSON): The LIXI package to be saved, formatted as per industry standards.
 - **Use Case**: This endpoint is valuable for maintaining a repository of sample packages that can be reused across different testing sessions, eliminating the need to recreate packages for commonly tested scenarios.
 
-### 5. `GET /LixiPackage/GetLixiPackageSample/{scenario}`
+### 5. `POST /LixiPackage/SaveSerializedLixiPackageSample`
+
+- **Purpose**: This endpoint is used to save a serialzied LIXI-format loan application package sample, making it available for future testing or reference.
+- **Functionality**: Users can create a serialized LIXI package sample for a particular scenario and save it using this endpoint. The saved sample can include specific data and configurations that reflect lender requirements or unique testing cases.
+- **Parameters**:
+    - `Scenario` (string): The scenario name associated with the sample package (e.g., `Refinancing`, `TopUp`).
+    - `BeObfuscated`(boolean): Determines if the data for a specific field should be obfuscated or not. At this point, if the flag is true, only the value of  following properties get obfuscated: "CompanyName", "Email", "Number", "ABN", "WebAddress", "BusinessNumber", "Name"
+    - `SerializedLIXIPackageSample` (JSON): The serilaized LIXI package to be saved, formatted as per industry standards.
+- **Use Case**: This endpoint is valuable for maintaining a repository of serialzied sample packages that can be reused across different testing sessions, eliminating the need to recreate packages for commonly tested scenarios.
+- **Note**: The main difference between this endpoint and SaveLixiPackageSample is the input for the saving a lixi packge. By this endpoint, a serialized lixi package based on country and lixi version can be saved as a sample for future use but in SaveLixiPackageSample the package to be saved should be in pre-serialized format. 
+
+### 6. `GET /LixiPackage/GetLixiPackageSample/{scenario}`
 
 - **Purpose**: This endpoint retrieves a previously saved LIXI package sample based on a specified scenario.
 - **Functionality**: Users can query this endpoint to access the stored LIXI package for a given scenario. The retrieved package can then be used as a template or reference for creating new packages or for testing the submission and validation processes.
@@ -161,7 +172,7 @@ This option is suitable for local testing and development environments where set
     - `scenario` (string): The scenario identifier for which the LIXI package sample should be retrieved (e.g., `Refinancing`, `TopUp`).
 - **Use Case**: This endpoint is useful for quickly accessing predefined LIXI packages without manually searching or recreating them, enabling more efficient testing and validation workflows.
 
-### 6. `GET /LixiPackage/GetSerializedLixiPackageSample/{scenario}`
+### 7. `GET /LixiPackage/GetSerializedLixiPackageSample/{scenario}`
 
 - **Purpose**: This endpoint retrieves a previously saved LIXI package sample based on a specified scenario and return serialized value of the package based on Lixi version and country.
 - **Functionality**: Users can query this endpoint to get serilized sample lixi package.
